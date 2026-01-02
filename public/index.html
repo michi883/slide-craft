@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Pitch Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid #e5e7eb;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .step.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Button color variants */
+        .btn-download {
+            background: #059669;
+        }
+
+        .btn-download:hover {
+            background: #047857;
+        }
+
+        .btn-upload {
+            background: #0d9488;
+            color: white;
+        }
+
+        .btn-upload:hover {
+            background: #0f766e;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: #ffffff;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s, box-shadow 0.15s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            background: #1e40af;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-refine {
+            background: #7c3aed;
+        }
+
+        .btn-refine:hover {
+            background: #6d28d9;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .option-card {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #ffffff;
+        }
+
+        .option-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .option-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .option-card img {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .option-card .label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #374151;
+            text-align: center;
+        }
+
+        .refinement-option {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #ffffff;
+            font-size: 14px;
+        }
+
+        .refinement-option:hover {
+            border-color: #059669;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .refinement-option.selected {
+            border-color: #059669;
+            background: #ecfdf5;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+        }
+
+        .final-image-container {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .final-image-container.show {
+            display: block;
+        }
+
+        .final-image {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s, box-shadow 0.15s;
+        }
+
+        .description-box {
+            background: #f9fafb;
+            border-left: 3px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .description-content {
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .success-message {
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 12px 16px;
+            border-radius: 6px;
+            border: 1px solid #a7f3d0;
+            margin-top: 16px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 6px;
+            border: 1px solid #fecaca;
+            margin-top: 16px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            border: 3px solid #e5e7eb;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading #loadingText {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .note {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .refine-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .refine-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .refine-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .refine-options.hidden {
+            display: none;
+        }
+
+        .custom-instruction {
+            margin-top: 14px;
+        }
+
+        .custom-instruction.hidden {
+            display: none;
+        }
+
+        .custom-instruction textarea {
+            min-height: 80px;
+            font-size: 13px;
+        }
+
+        .refine-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #fbbf24;
+            color: #78350f;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        /* About Link */
+        .about-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .about-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+
+        .about-link a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.2s, opacity 0.2s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-header {
+            background: #1f2937;
+            padding: 16px 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #374151;
+        }
+
+        .modal-header h2 {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .modal-body h3 {
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body p {
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .modal-body ul {
+            margin-left: 18px;
+            margin-bottom: 12px;
+        }
+
+        .modal-body li {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .modal-body strong {
+            color: #2563eb;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: #1f2937;
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p id="loadingText">Generating options...</p>
+    </div>
+
+    <div class="container">
+        <h1>AI Business Pitch Generator</h1>
+        <p class="subtitle">Transform your idea into a professional pitch slide</p>
+
+        <div class="step-indicator">
+            <span class="step active" id="step1">1. Enter Idea</span>
+            <span class="step" id="step2">2. Choose Style</span>
+            <span class="step" id="step3">3. Final Slide</span>
+            <span class="step hidden" id="step4">4. Refine</span>
+        </div>
+
+        <div class="input-group" id="inputSection">
+            <textarea
+                id="promptInput"
+                placeholder="Describe your business idea...&#10;&#10;Examples:&#10;• A flying car service for rural areas&#10;• An app that connects farmers with buyers directly&#10;• A subscription service for sustainable home products"
+            ></textarea>
+        </div>
+
+        <div id="initialButtons">
+            <button class="btn" id="generateOptionsBtn" onclick="generateOptions()">
+                Generate Style Options
+            </button>
+        </div>
+
+        <div class="options-grid hidden" id="optionsContainer"></div>
+
+        <div class="final-image-container" id="finalImageContainer">
+            <img id="finalImage" class="final-image" alt="Final pitch slide">
+
+            <div class="action-buttons" id="mainActions">
+                <button class="btn btn-refine" onclick="showRefineOptions()">
+                    Refine Slide
+                </button>
+                <button class="btn-upload" id="uploadBtn" onclick="uploadImage()">
+                    Upload to InsForge
+                </button>
+                <button class="btn-download" onclick="downloadImage()">
+                    Download
+                </button>
+                <button class="btn btn-secondary" onclick="startOver()">
+                    Start Over
+                </button>
+            </div>
+
+            <div class="refine-section hidden" id="refineSection">
+                <div class="refine-title">
+                    How would you like to refine your slide?
+                </div>
+
+                <div class="refine-options hidden" id="refineOptions">
+                    <!-- AI suggestions will be loaded here -->
+                </div>
+
+                <div class="custom-instruction hidden" id="customInstructionSection">
+                    <textarea
+                        id="customInstruction"
+                        placeholder="Or describe your own refinement...&#10;&#10;Example: Add a competitive analysis chart, change the color scheme to blue and green, emphasize the social impact metrics"
+                    ></textarea>
+                </div>
+
+                <div class="refine-actions hidden" id="refineActions">
+                    <button class="btn" onclick="applyRefinement()">
+                        Apply Refinement
+                    </button>
+                    <button class="btn btn-secondary" onclick="cancelRefine()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <div class="success-message" id="successMessage"></div>
+
+            <div class="description-box" id="descriptionBox" style="display: none;">
+                <div class="description-label">Slide Concept:</div>
+                <div class="description-content" id="slideDescription"></div>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <p class="note">Powered by Google Gemini & Imagen AI | Storage by InsForge</p>
+
+        <div class="about-link">
+            <a href="#" onclick="openModal(event)">About this app</a>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>About AI Business Pitch Generator</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>What is this?</h3>
+                <p>
+                    An AI-powered tool that transforms your business ideas into professional pitch slides in seconds.
+                    Perfect for entrepreneurs, startups, and anyone preparing investor presentations.
+                </p>
+
+                <h3>How it works</h3>
+                <ul>
+                    <li><strong>Step 1:</strong> Enter your business idea</li>
+                    <li><strong>Step 2:</strong> Choose from 3 visual style options</li>
+                    <li><strong>Step 3:</strong> Get a polished, investor-ready slide</li>
+                    <li><strong>Optional:</strong> Refine with AI suggestions to improve your slide</li>
+                </ul>
+
+                <h3>Features</h3>
+                <ul>
+                    <li>Multiple design styles (minimalist, data-focused, icon-heavy)</li>
+                    <li>AI-powered refinement suggestions</li>
+                    <li>Download slides as PNG images</li>
+                    <li>Cloud storage via InsForge</li>
+                </ul>
+
+                <h3>Built With</h3>
+                <p>
+                    <span class="tech-badge">Google Gemini 3 Flash</span>
+                    <span class="tech-badge">Imagen 4.0</span>
+                    <span class="tech-badge">InsForge Storage</span>
+                    <span class="tech-badge">Node.js</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrompt = '';
+        let currentImageBase64 = '';
+        let currentImageData = '';
+        let selectedOptionIndex = null;
+        let refineSuggestions = [];
+        let selectedRefinement = null;
+
+        async function generateOptions() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            const generateBtn = document.getElementById('generateOptionsBtn');
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('errorMessage');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const inputSection = document.getElementById('inputSection');
+            const initialButtons = document.getElementById('initialButtons');
+            const finalImageContainer = document.getElementById('finalImageContainer');
+            const successMessage = document.getElementById('successMessage');
+            const step2 = document.getElementById('step2');
+            const step4 = document.getElementById('step4');
+
+            // Reset state
+            errorMessage.classList.remove('show');
+            optionsContainer.classList.add('hidden');
+            finalImageContainer.classList.remove('show');
+            successMessage.classList.remove('show');
+            selectedOptionIndex = null;
+            selectedRefinement = null;
+            step4.classList.add('hidden');
+            step4.classList.remove('active');
+
+            // Validate input
+            if (!prompt) {
+                errorMessage.textContent = 'Please enter your business idea';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            currentPrompt = prompt;
+
+            // Show loading
+            generateBtn.disabled = true;
+            loading.classList.add('show');
+            loadingText.textContent = 'Generating 3 style options...';
+
+            try {
+                const response = await fetch('/generate-options', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.options) {
+                    // Display options
+                    optionsContainer.innerHTML = data.options.map((option, index) => `
+                        <div class="option-card" onclick="selectOption(${index})" data-index="${index}">
+                            <img src="${option.image}" alt="Option ${index + 1}">
+                            <div class="label">${option.concept}</div>
+                        </div>
+                    `).join('');
+                    optionsContainer.classList.remove('hidden');
+
+                    // Hide initial elements
+                    inputSection.classList.add('hidden');
+                    initialButtons.classList.add('hidden');
+
+                    // Update to step 2
+                    document.getElementById('step1').classList.remove('active');
+                    step2.classList.add('active');
+                } else {
+                    errorMessage.textContent = data.error || 'Failed to generate options';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('show');
+            } finally {
+                generateBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        }
+
+        async function selectOption(index) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('errorMessage');
+            const finalImageContainer = document.getElementById('finalImageContainer');
+            const successMessage = document.getElementById('successMessage');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+
+            // Reset messages
+            errorMessage.classList.remove('show');
+            finalImageContainer.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            // Highlight selected option
+            document.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-index="${index}"]`).classList.add('selected');
+
+            selectedOptionIndex = index;
+
+            // Show loading
+            loading.classList.add('show');
+            loadingText.textContent = 'Creating your sophisticated pitch slide...';
+
+            try {
+                const response = await fetch('/generate-final', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: currentPrompt,
+                        selectedOption: index
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.image) {
+                    document.getElementById('finalImage').src = data.image;
+                    currentImageData = data.image;
+                    currentImageBase64 = data.imageBase64;
+                    finalImageContainer.classList.add('show');
+
+                    if (data.description) {
+                        document.getElementById('slideDescription').textContent = data.description;
+                        document.getElementById('descriptionBox').style.display = 'block';
+                    }
+
+                    // Hide options
+                    optionsContainer.classList.add('hidden');
+
+                    // Update steps
+                    step2.classList.remove('active');
+                    step3.classList.add('active');
+                } else {
+                    errorMessage.textContent = data.error || 'Failed to generate final slide';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        async function showRefineOptions() {
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('errorMessage');
+            const mainActions = document.getElementById('mainActions');
+            const refineSection = document.getElementById('refineSection');
+            const refineOptions = document.getElementById('refineOptions');
+            const customInstructionSection = document.getElementById('customInstructionSection');
+            const refineActions = document.getElementById('refineActions');
+            const step3 = document.getElementById('step3');
+            const step4 = document.getElementById('step4');
+
+            // Reset
+            errorMessage.classList.remove('show');
+            selectedRefinement = null;
+
+            // Show loading
+            loading.classList.add('show');
+            loadingText.textContent = 'Generating refinement suggestions...';
+
+            try {
+                const response = await fetch('/get-refine-options', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: currentPrompt,
+                        selectedOption: selectedOptionIndex
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.suggestions) {
+                    refineSuggestions = data.suggestions;
+
+                    // Display refinement options
+                    refineOptions.innerHTML = data.suggestions.map((suggestion, index) => `
+                        <div class="refinement-option" onclick="selectRefinement(${index}, this)" data-index="${index}">
+                            ${suggestion}
+                        </div>
+                    `).join('');
+
+                    // Show refine UI
+                    mainActions.classList.add('hidden');
+                    refineSection.classList.remove('hidden');
+                    refineOptions.classList.remove('hidden');
+                    customInstructionSection.classList.remove('hidden');
+                    refineActions.classList.remove('hidden');
+
+                    // Update steps
+                    step3.classList.remove('active');
+                    step4.classList.remove('hidden');
+                    step4.classList.add('active');
+                } else {
+                    errorMessage.textContent = data.error || 'Failed to get refinement suggestions';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        function selectRefinement(index, element) {
+            // Deselect all
+            document.querySelectorAll('.refinement-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('customInstruction').value = '';
+
+            // Select clicked
+            element.classList.add('selected');
+            selectedRefinement = { type: 'suggestion', value: refineSuggestions[index] };
+        }
+
+        // Handle custom input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('customInstruction').addEventListener('input', function() {
+                // Deselect suggestions when typing in custom input
+                document.querySelectorAll('.refinement-option').forEach(el => el.classList.remove('selected'));
+                selectedRefinement = { type: 'custom', value: this.value };
+            });
+        });
+
+        async function applyRefinement() {
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (!selectedRefinement || !selectedRefinement.value) {
+                errorMessage.textContent = 'Please select a refinement or enter your own instructions';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // Show loading
+            loading.classList.add('show');
+            loadingText.textContent = 'Refining your slide...';
+
+            try {
+                const response = await fetch('/refine-slide', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: currentPrompt,
+                        selectedOption: selectedOptionIndex,
+                        refinementInstruction: selectedRefinement.value,
+                        isCustom: selectedRefinement.type === 'custom'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.image) {
+                    document.getElementById('finalImage').src = data.image;
+                    currentImageData = data.image;
+                    currentImageBase64 = data.imageBase64;
+
+                    if (data.description) {
+                        document.getElementById('slideDescription').textContent = data.description;
+                        document.getElementById('descriptionBox').style.display = 'block';
+                    }
+
+                    // Hide refine UI
+                    cancelRefine();
+                } else {
+                    errorMessage.textContent = data.error || 'Failed to refine slide';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        function cancelRefine() {
+            document.getElementById('mainActions').classList.remove('hidden');
+            document.getElementById('refineSection').classList.add('hidden');
+            document.getElementById('refineOptions').classList.add('hidden');
+            document.getElementById('customInstructionSection').classList.add('hidden');
+            document.getElementById('refineActions').classList.add('hidden');
+            document.getElementById('customInstruction').value = '';
+            document.querySelectorAll('.refinement-option').forEach(el => el.classList.remove('selected'));
+            selectedRefinement = null;
+
+            // Reset steps back to step 3
+            document.getElementById('step3').classList.add('active');
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('step4').classList.add('hidden');
+        }
+
+        async function uploadImage() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Reset messages
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            if (!currentImageBase64) {
+                errorMessage.textContent = 'No image to upload. Please generate a slide first.';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // Show loading
+            uploadBtn.disabled = true;
+            loading.classList.add('show');
+            loadingText.textContent = 'Uploading to InsForge...';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        imageBase64: currentImageBase64,
+                        prompt: currentPrompt
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    successMessage.innerHTML = `
+                        <strong>Upload successful!</strong><br>
+                        File: ${data.fileName}<br>
+                        <a href="${data.fileUrl}" target="_blank" style="color: #059669;">View on InsForge</a>
+                    `;
+                    successMessage.classList.add('show');
+                } else {
+                    errorMessage.textContent = data.error || 'Failed to upload to InsForge';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('show');
+            } finally {
+                uploadBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        }
+
+        function downloadImage() {
+            if (!currentImageData) {
+                alert('No image to download. Please generate a slide first.');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = currentImageData;
+            link.download = `pitch-slide-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function startOver() {
+            // Reset all state
+            currentPrompt = '';
+            currentImageBase64 = '';
+            currentImageData = '';
+            selectedOptionIndex = null;
+            refineSuggestions = [];
+            selectedRefinement = null;
+
+            // Reset UI
+            document.getElementById('promptInput').value = '';
+            document.getElementById('inputSection').classList.remove('hidden');
+            document.getElementById('initialButtons').classList.remove('hidden');
+            document.getElementById('optionsContainer').classList.add('hidden');
+            document.getElementById('optionsContainer').innerHTML = '';
+            document.getElementById('finalImageContainer').classList.remove('show');
+            document.getElementById('mainActions').classList.remove('hidden');
+            document.getElementById('refineSection').classList.add('hidden');
+            document.getElementById('descriptionBox').style.display = 'none';
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+
+            // Reset steps
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('step4').classList.add('hidden');
+        }
+
+        // Allow Enter key to submit (with Ctrl/Cmd)
+        document.getElementById('promptInput').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                generateOptions();
+            }
+        });
+
+        // Modal functions
+        function openModal(event) {
+            event.preventDefault();
+            document.getElementById('aboutModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('aboutModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('aboutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
