@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // API Keys from environment variables (Zeabur compatible)
-const GOOGLE_API_KEY = process.env.GEMENI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+const GOOGLE_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
 const INSFORGE_API_KEY = process.env.INSFORGE_STORAGE_KEY || process.env.INSFORGE_API_KEY;
 const TEXT_MODEL = 'gemini-3-flash-preview';
 const IMAGE_MODEL = 'imagen-4.0-fast-generate-001';
@@ -479,7 +479,7 @@ app.post('/upload', async (req, res) => {
 
 // Validate required environment variables
 if (!GOOGLE_API_KEY) {
-  console.error('ERROR: GEMENI_API_KEY or GOOGLE_GENAI_API_KEY environment variable is not set');
+  console.error('ERROR: GEMINI_API_KEY or GOOGLE_GENAI_API_KEY environment variable is not set');
   process.exit(1);
 }
 
