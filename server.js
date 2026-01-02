@@ -8,15 +8,16 @@ const axios = require('axios');
 const FormData = require('form-data');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-const GOOGLE_API_KEY = process.env.GOOGLE_GENAI_API_KEY;
-const INSFORGE_API_KEY = process.env.INSFORGE_API_KEY;
+// API Keys from environment variables (Zeabur compatible)
+const GOOGLE_API_KEY = process.env.GEMENI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+const INSFORGE_API_KEY = process.env.INSFORGE_STORAGE_KEY || process.env.INSFORGE_API_KEY;
 const TEXT_MODEL = 'gemini-3-flash-preview';
 const IMAGE_MODEL = 'imagen-4.0-fast-generate-001';
 
-// InsForge Configuration
-const INSFORGE_BASE_URL = 'https://dx2ji8ea.us-west.insforge.app';
+// InsForge Configuration (use environment variable if available)
+const INSFORGE_BASE_URL = process.env.INSFORGE_STORAGE_URL || 'https://dx2ji8ea.us-west.insforge.app';
 const INSFORGE_BUCKET = 'slides';
 
 // Middleware
@@ -475,6 +476,17 @@ app.post('/upload', async (req, res) => {
     });
   }
 });
+
+// Validate required environment variables
+if (!GOOGLE_API_KEY) {
+  console.error('ERROR: GEMENI_API_KEY or GOOGLE_GENAI_API_KEY environment variable is not set');
+  process.exit(1);
+}
+
+if (!INSFORGE_API_KEY) {
+  console.error('ERROR: INSFORGE_STORAGE_KEY or INSFORGE_API_KEY environment variable is not set');
+  process.exit(1);
+}
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
